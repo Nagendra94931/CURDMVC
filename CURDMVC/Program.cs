@@ -1,13 +1,18 @@
-
 using CURDMVC.RouteServices;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+using CURDMVC.DataModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//Cookie Authentication ()
+// Register DbContext with the connection string from appsettings.json
+builder.Services.AddDbContext<EfcoreMvcdbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("EFCoreDBConnection")));
+
+// Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -17,16 +22,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization();
 
- 
-var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -45,7 +42,4 @@ RouteConfig.RegisterRoutes(app);
 
 
 app.Run();
-
-
-
 
