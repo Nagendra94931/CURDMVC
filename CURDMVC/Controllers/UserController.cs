@@ -61,14 +61,16 @@ namespace CURDMVC.Controllers
 
         #endregion
 
+
+        #region Dashboard
+
         [Authorize]
             public IActionResult Dashboard()
             {
                 return View();
             }
 
-
-
+        #endregion
 
 
 
