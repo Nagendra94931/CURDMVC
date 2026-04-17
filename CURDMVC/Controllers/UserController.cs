@@ -84,6 +84,12 @@ namespace CURDMVC.Controllers
                 return View();
             }
 
+
+
+        public IActionResult UserDashboard()
+        {
+            return View();
+        }
         #endregion
 
 
