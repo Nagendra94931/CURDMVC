@@ -16,8 +16,11 @@ builder.Services.AddDbContext<EfcoreMvcdbContext>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.LoginPath = "/User/Login";
+        options.AccessDeniedPath = "/User/AccessDenied";
+
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // default expiry
+        options.SlidingExpiration = true; // refresh expiry on activity
     });
 
 builder.Services.AddAuthorization();
@@ -33,9 +36,20 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Redirect root (/) to /User/Login
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/User/Login");
+    return Task.CompletedTask;
+});
+
+
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 
 //Using for Route Configure
 RouteConfig.RegisterRoutes(app);

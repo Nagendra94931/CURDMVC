@@ -4,10 +4,16 @@
     {
         public static void RegisterRoutes(IEndpointRouteBuilder endpoints)
         {
-            // Default route
+            //// Default route
+            //endpoints.MapControllerRoute(
+            //    name: "default",
+            //    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+            // Default route - open Login by default
             endpoints.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=User}/{action=Login}/{id?}");
 
 
             // Login 
