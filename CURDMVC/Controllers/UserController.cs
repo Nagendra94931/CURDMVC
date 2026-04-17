@@ -10,53 +10,67 @@ namespace CURDMVC.Controllers
     public class UserController : Controller
     {
 
+
+        //Home page - open to all users
+        public async Task<IActionResult> Index()
+        {
+            await Task.Delay(1);
+            return View();
+        }
+
+
+
+
+
+
+
         #region Login / Logout
 
-            public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login()
             {
                 await Task.Delay(1);
                 return  View();
             }
 
 
-            [HttpPost]
-            public async Task<IActionResult> Login(string username, string password)
+        [HttpPost]
+        public async Task<IActionResult> Login(string username, string password, bool rememberMe)
+        {
+            if (username == "admin" && password == "123")
             {
-                // Example validation (replace with DB check)
-                if (username == "admin" && password == "123")
+                var claims = new List<Claim>
                 {
-                    var claims = new List<Claim>
+                    new Claim(ClaimTypes.Name, username),
+                    new Claim(ClaimTypes.Role, "Admin")
+                };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    principal,
+                    new AuthenticationProperties
                     {
-                        new Claim(ClaimTypes.Name, username),
-                        new Claim(ClaimTypes.Role, "Admin")
-                    };
+                        //If rememberMe == true user remember
+                        IsPersistent = rememberMe, // remember user
+                        ExpiresUtc = DateTime.UtcNow.AddMinutes(30)
+                    });
 
-                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var principal = new ClaimsPrincipal(identity);
-
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-                    //(Set Expiry for 30 mins)
-                    //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,principal,
-                    //    new AuthenticationProperties
-                    //    {
-                    //        IsPersistent = true,
-                    //        ExpiresUtc = DateTime.UtcNow.AddMinutes(30)
-                    //    });
-
-                return RedirectToAction("Index", "Home");
-                }
-
-                ViewBag.Error = "Invalid login";
-                return View();
+                return RedirectToAction("Dashboard");
             }
 
+            ViewBag.Error = "Invalid login";
+            return View();
+        }
 
-            public async Task<IActionResult> Logout()
-            {
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                return RedirectToAction("Login");
-            }
+
+        public async Task<IActionResult> Logout()
+        {
+           await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+           return RedirectToRoute("Login");
+        }
+
 
 
         #endregion
@@ -71,6 +85,17 @@ namespace CURDMVC.Controllers
             }
 
         #endregion
+
+
+
+
+
+
+
+
+
+
+
 
 
 
